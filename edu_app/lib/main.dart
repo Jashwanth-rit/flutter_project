@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
+import 'package:email_validator/email_validator.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,19 +21,18 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // ignore: unused_field
-  static final TextEditingController _usernameController =
-      TextEditingController();
-  static final TextEditingController _emailController = TextEditingController();
-  static final TextEditingController _passwordController =
-      TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
 
   void _showAlertDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Wellcome!"),
+          title: Text("Welcome!"),
           content: Text("Login Successful!"),
           actions: <Widget>[
             TextButton(
@@ -51,87 +51,125 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 207, 168, 10),
+        backgroundColor: const Color.fromARGB(255, 93, 7, 173), // Deep purple for the app bar
         title: Center(
           child: Text(
-            'Login-page',
+            'Login Page',
             style: TextStyle(
-              color: const Color.fromARGB(255, 10, 9, 9),
+              color: const Color.fromARGB(255, 247, 243, 243), // Light color for contrast
               fontSize: 24,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
-
-        //title: Text('Login-page'),
       ),
       body: Center(
         child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                    labelText: 'Username',
-                    border: OutlineInputBorder(),
+          padding: EdgeInsets.all(20.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 300,
+                  child: TextFormField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.person),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your username';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-              ),
-              SizedBox(height: 22),
-
-              SizedBox(
-                width: 200,
-                child: TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email ID',
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-              ),
-              //
-              SizedBox(height: 22),
-
-              SizedBox(
-                width: 200,
-                child: TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                  ),
-                  obscureText: true,
-                ),
-              ),
-
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  // Handle the login action here
-                  // For now, just navigate to the HomePage
-                  
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Homepage( username: _usernameController.text,
-                        email: _emailController.text,)),
-                  );
-                  _showAlertDialog(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: const Color.fromARGB(255, 9, 9, 7),
-                  backgroundColor:
-                      const Color.fromARGB(255, 222, 208, 15), // Text color
-                  padding: EdgeInsets.all(16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                SizedBox(height: 22),
+                SizedBox(
+                  width: 300,
+                  child: TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email ID',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.email),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      } else if (!EmailValidator.validate(value)) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-                child: Text('Login!'),
-              ),
-            ],
+                SizedBox(height: 22),
+                SizedBox(
+                  width: 300,
+                  child: TextFormField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.lock),
+                    ),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      } else if (value.length < 8) {
+                        return 'Password must be at least 8 characters long';
+                      } else if (!RegExp(r'(?=.*?[#?!@$%^&*-])').hasMatch(value)) {
+                        return 'Password must include a special character';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Homepage(
+                            username: _usernameController.text,
+                            email: _emailController.text,
+                          ),
+                        ),
+                      );
+                      _showAlertDialog(context);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 159, 64), // Vibrant orange button
+                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(
+                        color: Colors.black, // Adding a black border
+                        width: 2.0, // Border width
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'Login',
+                    style: TextStyle(
+                      color: Colors.white, // White text for contrast with orange button
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

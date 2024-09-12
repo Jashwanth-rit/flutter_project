@@ -2,18 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'home.dart';
 
-// void main() {
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: FloatingFooterPage(),
-//     );
-//   }
-// }
 
 class FloatingFooterPage extends StatelessWidget {
    final String username;

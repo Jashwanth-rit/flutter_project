@@ -2,13 +2,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'data.dart'; // Ensure this contains the Course class
-import 'home.dart'; // Ensure this contains the Homepage widget
+import 'data.dart'; 
+
+import 'home_footer.dart';
 
 class CourseDetailScreen extends StatelessWidget {
   final Course course;
+  final String username;
+  final String email;
 
-  CourseDetailScreen({required this.course});
+  
+
+
+  CourseDetailScreen({required this.course,required this.username, required this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -47,56 +53,7 @@ class CourseDetailScreen extends StatelessWidget {
         ),
       ),
 
-     floatingActionButton: Stack(
-        children: [
-          // Centering the buttons
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    FloatingActionButton(
-                      onPressed: () {
-                        _showChatDialog(context);
-                      },
-                      child: Icon(Icons.chat),
-                      tooltip: 'Chat',
-                    ),
-                    FloatingActionButton(
-                      onPressed: () {
-                        _showReviewDialog(context);
-                      },
-                      child: Icon(Icons.rate_review),
-                      tooltip: 'Review',
-                    ),
-                    FloatingActionButton(
-                      onPressed: () {
-                        _launchChallengesURL;
-                      },
-                      child: Icon(Icons.timeline),
-                      tooltip: 'Challenges',
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16), // Space between row of buttons and home button
-                FloatingActionButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Homepage(username: '', email: '',)),
-                    );
-                  },
-                  child: Icon(Icons.home),
-                  tooltip: 'Home',
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+    floatingActionButton: FloatingFooterPage(username: username, email:email),
     );
   }
 
@@ -118,80 +75,10 @@ void _launchDocumentationURL() async {
   }
 }
 
-void _launchChallengesURL() async {
-  const url = 'https://leetcode.com/problemset';
-  if (await canLaunchUrl(Uri.parse(url))) {
-    await launchUrl(Uri.parse(url));
-  } else {
-    throw 'Could not launch $url';
-  }
-}
 
 
-  void _showReviewDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Review Box'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Review about our quality'),
-              SizedBox(height: 16),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Review',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
-  void _showChatDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Chat Box'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Drop your chat'),
-              SizedBox(height: 16),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Drop here',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+ 
+ 
 }
 
